@@ -1,0 +1,293 @@
+{
+  "info": {
+    "name": "Medicine Backend API",
+    "description": "Complete API collection for Medicine Backend with all endpoints",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000",
+      "type": "string"
+    },
+    {
+      "key": "authToken",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Register User",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"test@example.com\",\n  \"password\": \"password123\",\n  \"name\": \"Test User\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "register"]
+            }
+          }
+        },
+        {
+          "name": "Login User",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    pm.collectionVariables.set('authToken', response.access_token);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"test@example.com\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "login"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Users",
+      "item": [
+        {
+          "name": "Get User Profile",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/users/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["users", "1"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Doctors",
+      "item": [
+        {
+          "name": "Create Doctor",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"specialization\": \"Cardiology\",\n  \"experience\": 5,\n  \"licenseNumber\": \"DOC123456\",\n  \"availableTimeSlots\": [\"09:00-10:00\", \"14:00-15:00\", \"16:00-17:00\"]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/doctor/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["doctor", "1"]
+            }
+          }
+        },
+        {
+          "name": "Get All Doctors",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/doctor",
+              "host": ["{{baseUrl}}"],
+              "path": ["doctor"]
+            }
+          }
+        },
+        {
+          "name": "Get Doctor by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/doctor/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["doctor", "1"]
+            }
+          }
+        },
+        {
+          "name": "Get Doctor Time Slots",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/doctor/1/time-slots",
+              "host": ["{{baseUrl}}"],
+              "path": ["doctor", "1", "time-slots"]
+            }
+          }
+        },
+        {
+          "name": "Get My Time Slots (Secure)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/doctor/me/time-slots",
+              "host": ["{{baseUrl}}"],
+              "path": ["doctor", "me", "time-slots"]
+            }
+          }
+        },
+        {
+          "name": "Update Doctor",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"specialization\": \"Neurology\",\n  \"availableTimeSlots\": [\"10:00-11:00\", \"15:00-16:00\"]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/doctor/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["doctor", "1"]
+            }
+          }
+        },
+        {
+          "name": "Delete Doctor",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/doctor/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["doctor", "1"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Appointments",
+      "item": [
+        {
+          "name": "Create Appointment",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"patientName\": \"John Doe\",\n  \"patientEmail\": \"john@example.com\",\n  \"appointmentDate\": \"2024-01-15T10:00:00Z\",\n  \"doctorId\": \"test-doctor-id\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/appointment",
+              "host": ["{{baseUrl}}"],
+              "path": ["appointment"]
+            }
+          }
+        },
+        {
+          "name": "Get Appointments by Doctor",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/appointment/doctor/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["appointment", "doctor", "1"]
+            }
+          }
+        },
+        {
+          "name": "Accept Appointment",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/appointment/1/accept",
+              "host": ["{{baseUrl}}"],
+              "path": ["appointment", "1", "accept"]
+            }
+          }
+        },
+        {
+          "name": "Reject Appointment",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/appointment/1/reject",
+              "host": ["{{baseUrl}}"],
+              "path": ["appointment", "1", "reject"]
+            }
+          }
+        },
+        {
+          "name": "Update Appointment Status",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"CONFIRMED\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/appointment/1/status",
+              "host": ["{{baseUrl}}"],
+              "path": ["appointment", "1", "status"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+} 
