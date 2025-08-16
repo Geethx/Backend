@@ -36,8 +36,12 @@ export class DoctorService {
   }
 
   async findByUserId(userId: string): Promise<Doctor> {
-    const doctor = await this.doctorRepo.findOne({ where: { user: { id: userId } } });
-    if (!doctor) throw new NotFoundException('Doctor profile not found for this user');
+    const doctor = await this.doctorRepo.findOne({
+      where: { user: { id: userId } },
+      relations: ['user'],
+    });
+    if (!doctor)
+      throw new NotFoundException('Doctor profile not found for this user');
     return doctor;
   }
 
@@ -46,9 +50,13 @@ export class DoctorService {
     return this.findOne(id);
   }
 
-  async updateAvailableTimeSlots(userId: string, timeSlots: string[]): Promise<Doctor> {
+  async updateAvailableTimeSlots(
+    userId: string,
+    timeSlots: string[],
+  ): Promise<Doctor> {
     const doctor = await this.findByUserId(userId);
-    if (!doctor) throw new NotFoundException('Doctor profile not found for this user');
+    if (!doctor)
+      throw new NotFoundException('Doctor profile not found for this user');
     doctor.availableTimeSlots = timeSlots;
     return this.doctorRepo.save(doctor);
   }

@@ -19,6 +19,14 @@ import { User } from '../users/entities/user.entity';
 import { ApiTags, ApiOperation } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
+interface AuthenticatedRequest extends Request {
+  user: {
+    userId: string;
+    email: string;
+    role: string;
+  };
+}
+
 @ApiTags('Doctor')
 @Controller('doctor')
 export class DoctorController {
@@ -64,23 +72,23 @@ export class DoctorController {
     return {
       doctorId: doctor.id,
       doctorName: doctor.name,
-      availableTimeSlots: doctor.availableTimeSlots || []
+      availableTimeSlots: doctor.availableTimeSlots || [],
     };
   }
 
   @UseGuards(JwtAuthGuard)
   @Get('me/time-slots')
   @ApiOperation({ summary: 'Get logged-in doctor available time slots' })
-  async getMyTimeSlots(@Request() req) {
+  async getMyTimeSlots(@Request() req: AuthenticatedRequest) {
     console.log('getMyTimeSlots called for user:', req.user);
-    const userId = req.user.userId;
+    const userId: string = req.user.userId; // Use userId instead of sub
     try {
       const doctor = await this.doctorService.findByUserId(userId);
       console.log('Doctor found:', doctor);
       return {
         doctorId: doctor.id,
         doctorName: doctor.name,
-        availableTimeSlots: doctor.availableTimeSlots || []
+        availableTimeSlots: doctor.availableTimeSlots || [],
       };
     } catch (error) {
       console.error('Error in getMyTimeSlots:', error);
@@ -91,13 +99,19 @@ export class DoctorController {
   @UseGuards(JwtAuthGuard)
   @Post('me/time-slots')
   @ApiOperation({ summary: 'Update logged-in doctor available time slots' })
-  async updateMyTimeSlots(@Request() req, @Body('availableTimeSlots') availableTimeSlots: string[]) {
-    const userId = req.user.userId;
-    const doctor = await this.doctorService.updateAvailableTimeSlots(userId, availableTimeSlots);
+  async updateMyTimeSlots(
+    @Request() req: AuthenticatedRequest,
+    @Body('availableTimeSlots') availableTimeSlots: string[],
+  ) {
+    const userId: string = req.user.userId; // Use userId instead of sub
+    const doctor = await this.doctorService.updateAvailableTimeSlots(
+      userId,
+      availableTimeSlots,
+    );
     return {
       doctorId: doctor.id,
       doctorName: doctor.name,
-      availableTimeSlots: doctor.availableTimeSlots || []
+      availableTimeSlots: doctor.availableTimeSlots || [],
     };
   }
 

@@ -8,21 +8,21 @@ let refreshToken = '';
 const testUser = {
   email: 'test@example.com',
   password: 'password123',
-  name: 'Test User'
+  name: 'Test User',
 };
 
 const testDoctor = {
   specialization: 'Cardiology',
   experience: 5,
   licenseNumber: 'DOC123456',
-  availableTimeSlots: ['09:00-10:00', '14:00-15:00', '16:00-17:00']
+  availableTimeSlots: ['09:00-10:00', '14:00-15:00', '16:00-17:00'],
 };
 
 const testAppointment = {
   patientName: 'John Doe',
   patientEmail: 'john@example.com',
   appointmentDate: '2024-01-15T10:00:00Z',
-  doctorId: 'test-doctor-id'
+  doctorId: 'test-doctor-id',
 };
 
 async function testEndpoint(method, endpoint, data = null, headers = {}) {
@@ -32,8 +32,8 @@ async function testEndpoint(method, endpoint, data = null, headers = {}) {
       url: `${BASE_URL}${endpoint}`,
       headers: {
         'Content-Type': 'application/json',
-        ...headers
-      }
+        ...headers,
+      },
     };
 
     if (data) {
@@ -44,7 +44,9 @@ async function testEndpoint(method, endpoint, data = null, headers = {}) {
     console.log(`✅ ${method} ${endpoint} - Status: ${response.status}`);
     return response.data;
   } catch (error) {
-    console.log(`❌ ${method} ${endpoint} - Error: ${error.response?.status || error.message}`);
+    console.log(
+      `❌ ${method} ${endpoint} - Error: ${error.response?.status || error.message}`,
+    );
     return null;
   }
 }
@@ -55,16 +57,20 @@ async function runTests() {
   // 1. Test Authentication Endpoints
   console.log('📋 Testing Authentication Endpoints:');
   console.log('=====================================');
-  
+
   // Register user
-  const registerResponse = await testEndpoint('POST', '/auth/register', testUser);
-  
+  const registerResponse = await testEndpoint(
+    'POST',
+    '/auth/register',
+    testUser,
+  );
+
   // Login user
   const loginResponse = await testEndpoint('POST', '/auth/login', {
     email: testUser.email,
-    password: testUser.password
+    password: testUser.password,
   });
-  
+
   if (loginResponse) {
     authToken = loginResponse.access_token;
     refreshToken = loginResponse.refresh_token;
@@ -83,13 +89,15 @@ async function runTests() {
   await testEndpoint('GET', '/doctor');
   await testEndpoint('GET', '/doctor/1');
   await testEndpoint('GET', '/doctor/1/time-slots');
-  
+
   // Test the new secure endpoint for logged-in doctor
-  await testEndpoint('GET', '/doctor/me/time-slots', null, { Authorization: `Bearer ${authToken}` });
-  
-  await testEndpoint('PATCH', '/doctor/1', { 
+  await testEndpoint('GET', '/doctor/me/time-slots', null, {
+    Authorization: `Bearer ${authToken}`,
+  });
+
+  await testEndpoint('PATCH', '/doctor/1', {
     specialization: 'Neurology',
-    availableTimeSlots: ['10:00-11:00', '15:00-16:00']
+    availableTimeSlots: ['10:00-11:00', '15:00-16:00'],
   });
   await testEndpoint('DELETE', '/doctor/1');
 
@@ -115,10 +123,14 @@ async function runTests() {
 async function checkServer() {
   try {
     await axios.get(`${BASE_URL}/api`);
-    console.log('✅ Server is running and Swagger docs available at http://localhost:3000/api');
+    console.log(
+      '✅ Server is running and Swagger docs available at http://localhost:3000/api',
+    );
     return true;
   } catch (error) {
-    console.log('❌ Server is not running. Please start the server first with: npm run start:dev');
+    console.log(
+      '❌ Server is not running. Please start the server first with: npm run start:dev',
+    );
     return false;
   }
 }
@@ -131,4 +143,4 @@ async function main() {
   }
 }
 
-main().catch(console.error); 
+main().catch(console.error);

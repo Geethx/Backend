@@ -49,6 +49,13 @@ export class AuthService {
     return user;
   }
 
+  async findDoctorByUserId(userId: string): Promise<Doctor | null> {
+    return this.doctorRepository.findOne({
+      where: { user: { id: userId } },
+      relations: ['user'],
+    });
+  }
+
   serializeUser(user: User) {
     return {
       id: user.id,
@@ -72,7 +79,7 @@ export class AuthService {
         id: user.id,
         email: user.email,
         name: user.name,
-      }
+      },
     };
   }
 }

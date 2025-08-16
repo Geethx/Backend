@@ -3,18 +3,22 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Appointment, AppointmentStatus } from './entities/appointment.entity';
 import { CreateAppointmentDto } from './dto/create-appointment.dto';
-import { UpdateAppointmentDto } from './dto/update-appointment.dto';
 import { Doctor } from '../doctor/entities/doctor.entity';
+import { Patient } from '../patient/entities/patient.entity';
 
 @Injectable()
 export class AppointmentService {
   constructor(
-    @InjectRepository(Appointment) private appointmentRepo: Repository<Appointment>,
+    @InjectRepository(Appointment)
+    private appointmentRepo: Repository<Appointment>,
     @InjectRepository(Doctor) private doctorRepo: Repository<Doctor>,
+    @InjectRepository(Patient) private patientRepo: Repository<Patient>,
   ) {}
 
   async create(dto: CreateAppointmentDto): Promise<Appointment> {
-    const doctor = await this.doctorRepo.findOne({ where: { id: dto.doctorId } });
+    const doctor = await this.doctorRepo.findOne({
+      where: { id: dto.doctorId },
+    });
     if (!doctor) throw new NotFoundException('Doctor not found');
     const appointment = this.appointmentRepo.create({
       doctor,
@@ -34,42 +38,103 @@ export class AppointmentService {
       console.log('Doctor not found for id:', doctorId);
       return [];
     }
-    const appointments = await this.appointmentRepo.find({ where: { doctor: { id: doctorId } } });
+    const appointments = await this.appointmentRepo.find({
+      where: { doctor: { id: doctorId } },
+    });
     console.log('Found appointments:', appointments);
-    return appointments.map(appt => ({
+    return appointments.map((appt) => ({
       id: appt.id,
       status: appt.status,
       doctorId: appt.doctor.id,
-      scheduledAt: appt.scheduledAt ? appt.scheduledAt.toISOString().replace('T', ' ').substring(0, 16) : '',
+      scheduledAt: appt.scheduledAt
+        ? appt.scheduledAt.toISOString().replace('T', ' ').substring(0, 16)
+        : '',
       notes: appt.notes,
       patientId: appt.patientId,
       patientName: appt.patientName,
     }));
   }
 
-  async updateStatus(id: string, status: AppointmentStatus): Promise<Appointment> {
+  async updateStatus(
+    id: string,
+    status: AppointmentStatus,
+  ): Promise<Appointment> {
     const appointment = await this.appointmentRepo.findOne({ where: { id } });
     if (!appointment) throw new NotFoundException('Appointment not found');
     appointment.status = status;
     return this.appointmentRepo.save(appointment);
   }
 
-  async findByDoctorWithStatus(doctorId: string, status: AppointmentStatus): Promise<any[]> {
+  async findAll(): Promise<any[]> {
+    const appointments = await this.appointmentRepo.find({
+      relations: ['doctor'],
+    });
+    return appointments.map((appt) => ({
+      id: appt.id,
+      status: appt.status,
+      doctorId: appt.doctor.id,
+      doctorName: appt.doctor.name,
+      scheduledAt: appt.scheduledAt
+        ? appt.scheduledAt.toISOString().replace('T', ' ').substring(0, 16)
+        : '',
+      notes: appt.notes,
+      patientId: appt.patientId,
+      patientName: appt.patientName,
+    }));
+  }
+
+  async findByUserId(userId: string): Promise<any[]> {
+    // First find the doctor associated with this user
+    const doctor = await this.doctorRepo.findOne({
+      where: { user: { id: userId } },
+      relations: ['user'],
+    });
+
+    if (!doctor) {
+      console.log('Doctor not found for userId:', userId);
+      return [];
+    }
+
+    return this.findByDoctor(doctor.id);
+  }
+
+  async findPaidByUserId(userId: string): Promise<any[]> {
+    // First find the doctor associated with this user
+    const doctor = await this.doctorRepo.findOne({
+      where: { user: { id: userId } },
+      relations: ['user'],
+    });
+
+    if (!doctor) {
+      console.log('Doctor not found for userId:', userId);
+      return [];
+    }
+
+    // Return only confirmed appointments (paid appointments)
+    return this.findByDoctorWithStatus(doctor.id, AppointmentStatus.CONFIRMED);
+  }
+
+  async findByDoctorWithStatus(
+    doctorId: string,
+    status: AppointmentStatus,
+  ): Promise<any[]> {
     const appointments = await this.appointmentRepo.find({
       where: {
         doctor: { id: doctorId },
         status,
       },
     });
-    return appointments.map(appt => ({
+    return appointments.map((appt) => ({
       id: appt.id,
       status: appt.status,
       doctorId: appt.doctor.id,
-      scheduledAt: appt.scheduledAt?.toISOString().replace('T', ' ').substring(0, 16),
+      scheduledAt: appt.scheduledAt
+        ?.toISOString()
+        .replace('T', ' ')
+        .substring(0, 16),
       notes: appt.notes,
       patientId: appt.patientId,
       patientName: appt.patientName,
     }));
   }
-  
 }

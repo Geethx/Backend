@@ -5,6 +5,11 @@ import { UsersService } from './users.service';
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
+  @Get()
+  getAllUsers() {
+    return this.usersService.findAll();
+  }
+
   @Get(':id')
   getProfile(@Param('id') id: string) {
     return this.usersService.getProfile(id);

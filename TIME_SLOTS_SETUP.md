@@ -5,16 +5,20 @@ This guide explains how to set up and use the doctor time slots feature in your 
 ## 📋 **Backend Setup**
 
 ### **1. Database Schema**
+
 The doctor entity already includes the `availableTimeSlots` field:
+
 ```typescript
 @Column('simple-array', { nullable: true })
 availableTimeSlots?: string[];
 ```
 
 ### **2. API Endpoints**
+
 The following endpoints are available for managing doctor time slots:
 
 #### **Create Doctor with Time Slots**
+
 ```bash
 POST /doctor/:userId
 Content-Type: application/json
@@ -28,11 +32,13 @@ Content-Type: application/json
 ```
 
 #### **Get Doctor Time Slots**
+
 ```bash
 GET /doctor/:id/time-slots
 ```
 
 **Response:**
+
 ```json
 {
   "doctorId": "uuid",
@@ -42,6 +48,7 @@ GET /doctor/:id/time-slots
 ```
 
 #### **Update Doctor Time Slots**
+
 ```bash
 PATCH /doctor/:id
 Content-Type: application/json
@@ -52,7 +59,9 @@ Content-Type: application/json
 ```
 
 ### **3. Testing the Backend**
+
 Run the automated test script:
+
 ```bash
 node test-endpoints.js
 ```
@@ -62,7 +71,9 @@ Or use the provided Postman collection: `Medicine-Backend-API.postman_collection
 ## 📱 **Flutter Setup**
 
 ### **1. Add HTTP Package**
+
 Add the http package to your `pubspec.yaml`:
+
 ```yaml
 dependencies:
   flutter:
@@ -72,6 +83,7 @@ dependencies:
 ```
 
 ### **2. Files to Add**
+
 Copy these files to your Flutter project:
 
 1. **`doctor_time_slots_service.dart`** - Service for API calls
@@ -79,7 +91,9 @@ Copy these files to your Flutter project:
 3. **`example_usage.dart`** - Example of how to use the widget
 
 ### **3. Update Base URL**
+
 In `doctor_time_slots_service.dart`, update the base URL to match your backend:
+
 ```dart
 static const String baseUrl = 'http://your-backend-url:3000';
 ```
@@ -87,6 +101,7 @@ static const String baseUrl = 'http://your-backend-url:3000';
 ### **4. Using the Widget**
 
 #### **Show Current User's Time Slots**
+
 ```dart
 Navigator.push(
   context,
@@ -97,6 +112,7 @@ Navigator.push(
 ```
 
 #### **Show Specific Doctor's Time Slots**
+
 ```dart
 Navigator.push(
   context,
@@ -111,6 +127,7 @@ Navigator.push(
 ## 🚀 **Complete Workflow**
 
 ### **Step 1: Start Backend Server**
+
 ```bash
 # Set up environment variables
 cp env.example .env
@@ -124,6 +141,7 @@ npm run start:dev
 ```
 
 ### **Step 2: Create a Doctor with Time Slots**
+
 ```bash
 # First, register a user
 curl -X POST http://localhost:3000/auth/register \
@@ -142,12 +160,14 @@ curl -X POST http://localhost:3000/doctor/1 \
 ```
 
 ### **Step 3: Test the API**
+
 ```bash
 # Get doctor time slots
 curl -X GET http://localhost:3000/doctor/1/time-slots
 ```
 
 ### **Step 4: Use in Flutter App**
+
 ```dart
 // In your Flutter app
 import 'availableTimeSlot.dart';
@@ -164,28 +184,28 @@ Navigator.push(
 ## 📊 **Data Format**
 
 ### **Time Slot Format**
+
 Time slots should be in the format: `"HH:MM-HH:MM"`
 Examples:
+
 - `"09:00-10:00"`
 - `"14:30-15:30"`
 - `"16:00-17:00"`
 
 ### **API Response Format**
+
 ```json
 {
   "doctorId": "uuid-string",
   "doctorName": "Dr. John Doe",
-  "availableTimeSlots": [
-    "09:00-10:00",
-    "14:00-15:00",
-    "16:00-17:00"
-  ]
+  "availableTimeSlots": ["09:00-10:00", "14:00-15:00", "16:00-17:00"]
 }
 ```
 
 ## 🔧 **Customization**
 
 ### **Adding Time Slot Validation**
+
 You can add validation to ensure time slots are in the correct format:
 
 ```typescript
@@ -199,6 +219,7 @@ availableTimeSlots?: string[];
 ```
 
 ### **Adding Time Slot Business Logic**
+
 You can add methods to check for conflicts or validate time slots:
 
 ```typescript
@@ -214,14 +235,17 @@ async validateTimeSlots(timeSlots: string[]): Promise<boolean> {
 ### **Common Issues**
 
 1. **CORS Errors**
+
    - Ensure CORS is enabled in your backend
    - Check if the frontend URL is allowed
 
 2. **Database Connection Issues**
+
    - Verify PostgreSQL is running
    - Check database credentials in `.env`
 
 3. **Time Slots Not Saving**
+
    - Ensure the `availableTimeSlots` field is included in the request
    - Check that the field is properly validated
 
@@ -233,12 +257,14 @@ async validateTimeSlots(timeSlots: string[]): Promise<boolean> {
 ### **Debug Steps**
 
 1. **Check Backend Logs**
+
    ```bash
    npm run start:dev
    # Look for any error messages
    ```
 
 2. **Test API Directly**
+
    ```bash
    curl -X GET http://localhost:3000/doctor/1/time-slots
    ```
@@ -250,14 +276,17 @@ async validateTimeSlots(timeSlots: string[]): Promise<boolean> {
 ## 📈 **Next Steps**
 
 1. **Add Time Slot Conflicts Detection**
+
    - Check for overlapping appointments
    - Validate against existing bookings
 
 2. **Add Time Zone Support**
+
    - Store time slots with timezone information
    - Convert to user's local timezone
 
 3. **Add Recurring Time Slots**
+
    - Support for weekly schedules
    - Handle holidays and exceptions
 
@@ -267,4 +296,4 @@ async validateTimeSlots(timeSlots: string[]): Promise<boolean> {
 
 ---
 
-**Happy Coding! 🚀** 
+**Happy Coding! 🚀**

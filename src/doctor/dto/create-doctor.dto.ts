@@ -1,4 +1,4 @@
-import { IsEmail, IsOptional, IsString, IsArray } from 'class-validator';
+import { IsOptional, IsString, IsArray } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateDoctorDto {
@@ -22,7 +22,11 @@ export class CreateDoctorDto {
   @IsString()
   gender?: string;
 
-  @ApiProperty({ required: false, type: [String], description: 'Array of available time slots, e.g., [\'Friday 9-11\']' })
+  @ApiProperty({
+    required: false,
+    type: [String],
+    description: "Array of available time slots, e.g., ['Friday 9-11']",
+  })
   @IsOptional()
   @IsArray()
   @IsString({ each: true })

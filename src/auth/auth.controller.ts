@@ -18,15 +18,27 @@ export class AuthController {
 
   @Post('login')
   async login(@Body() dto: LoginDto) {
-    const tokens = this.authService.generateTokens(await this.authService.validateUser(dto.email, dto.password));
+    const user = await this.authService.validateUser(dto.email, dto.password);
+    const tokens = this.authService.generateTokens(user);
+
+    // Find the doctor associated with this user
+    const doctor = await this.authService.findDoctorByUserId(user.id);
+
     return {
-      access_token: tokens.access_token,
-      refresh_token: tokens.refresh_token,
-      user: {
-        id: tokens.user.id,
-        email: tokens.user.email,
-        name: tokens.user.name,
-      },
+      accessToken: tokens.access_token,
+      refreshToken: tokens.refresh_token,
+      doctor: doctor
+        ? {
+            id: doctor.id,
+            email: doctor.email,
+            name: doctor.name,
+            specialization: doctor.specialization,
+            contactNumber: doctor.contactNumber,
+            nic: doctor.nic,
+            gender: doctor.gender,
+            availableTimeSlots: doctor.availableTimeSlots,
+          }
+        : null,
     };
   }
 }
