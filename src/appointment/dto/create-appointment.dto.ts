@@ -10,8 +10,8 @@ export class CreateAppointmentDto {
   @ApiProperty()
   patientName: string;
 
-  @ApiProperty()
-  scheduledAt: Date;
+  @ApiProperty({ required: false })
+  scheduledAt?: Date;
 
   @ApiProperty({ required: false })
   notes?: string;

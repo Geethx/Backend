@@ -7,6 +7,10 @@ import { User } from './entities/user.entity';
 export class UsersService {
   constructor(@InjectRepository(User) private userRepo: Repository<User>) {}
 
+  async findAll() {
+    return this.userRepo.find();
+  }
+
   async getProfile(id: string) {
     const user = await this.userRepo.findOne({ where: { id } });
     if (!user) throw new NotFoundException('User not found');

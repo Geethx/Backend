@@ -12,11 +12,13 @@ export class JwtRefreshStrategy extends PassportStrategy(
   constructor(private configService: ConfigService) {
     super({
       jwtFromRequest: ExtractJwt.fromBodyField('refresh_token'),
-      secretOrKey: configService.get<string>('JWT_REFRESH_SECRET') || 'default_refresh_secret',
+      secretOrKey:
+        configService.get<string>('JWT_REFRESH_SECRET') ||
+        'default_refresh_secret',
     });
   }
 
-  async validate(payload: any) {
+  validate(payload: { sub: string; email: string; role: string }) {
     return { userId: payload.sub, email: payload.email, role: payload.role };
   }
 }
